@@ -3,427 +3,724 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>STONY BROOK UNIVERSITY NANOSATELLITE DIVISION // SYSTEM-3</title>
+  <title>SYSTEM-3 — 1U CubeSat | Stony Brook University</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { background: #05070B; }
+    :root {
+      --bg: #FAFAFA;
+      --surface: #FFFFFF;
+      --text: #1A1A2E;
+      --text-secondary: #64648C;
+      --accent: #E8590C;
+      --accent-light: #FFF4EF;
+      --border: #E8E8F0;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      background: #05070B;
-      color: #FFFFFF;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 13px;
-      line-height: 1.45;
-      cursor: crosshair !important;
-      padding: 20px 24px 40px;
-      max-width: 1100px;
-      margin: 0 auto;
-      text-rendering: optimizeSpeed;
-      -webkit-font-smoothing: none;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { color: inherit; text-decoration: none; }
-    a:focus { outline: 1px solid #FF9900; outline-offset: 2px; }
-
-    .diag-header {
-      border: 1px solid #1E293B;
-      padding: 10px 12px;
-      margin-bottom: 4px;
+    /* Fade-in on scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    .diag-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .diag-left, .diag-right {
-      color: #FF9900;
-      font-weight: bold;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-    }
-
-    .diag-rule {
-      color: #1E293B;
-      margin-top: 8px;
-      overflow: hidden;
-      white-space: nowrap;
-      user-select: none;
-    }
-
-    .zone {
-      border: 1px solid #1E293B;
-      margin-top: 16px;
-    }
-
-    .zone-label {
-      color: #00FF44;
-      font-weight: bold;
-      text-transform: uppercase;
-      padding: 8px 12px;
-      border-bottom: 1px solid #1E293B;
-      letter-spacing: 0.04em;
-    }
-
-    .zone-body { padding: 0; }
-
-    /* Progress tracker */
-    .progress-zone { padding: 20px 16px; }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      color: #FF9900;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-      font-size: 11px;
-      letter-spacing: 0.05em;
-    }
-
-    .progress-track {
-      position: relative;
-      height: 40px;
-      border: 1px solid #1E293B;
-      background: #0A0E14;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      position: absolute;
-      top: 0; left: 0; bottom: 0;
-      background: linear-gradient(90deg, #FF9900 0%, #FF6600 100%);
-      transition: width 2s ease-out;
-      width: 0%;
-    }
-
-    .progress-fill::after {
-      content: "";
-      position: absolute;
-      top: 0; right: 0; bottom: 0;
-      width: 30px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15));
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
-
-    @keyframes shimmer {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-
-    .cubesat-icon {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-      filter: drop-shadow(0 0 6px #FF9900);
-      z-index: 2;
-      transition: left 2s ease-out;
-      left: 0%;
-    }
-
-    .progress-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 6px;
-      color: #555;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
-
-    .days-remaining {
-      text-align: center;
-      margin-top: 10px;
-      color: #00FF44;
-      font-weight: bold;
-      font-size: 14px;
-      letter-spacing: 0.1em;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* PCB table */
-    table.pcb { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    table.pcb th, table.pcb td { border: 1px solid #1E293B; padding: 8px 10px; text-align: left; vertical-align: top; word-wrap: break-word; }
-    table.pcb th { color: #FF9900; font-weight: bold; text-transform: uppercase; background: #05070B; }
-    table.pcb td.tier { color: #00FF44; font-weight: bold; width: 12%; white-space: nowrap; }
-    table.pcb td.dims { color: #FFFFFF; width: 18%; white-space: nowrap; }
-    table.pcb td.log { color: #FFFFFF; }
-
-    /* RF list */
-    .rf-list { list-style: none; padding: 10px 12px 12px; }
-    .rf-list li { color: #FFFFFF; padding: 4px 0; white-space: pre-wrap; }
-    .rf-list .key { color: #00FF44; font-weight: bold; }
-
-    /* Mission overview */
-    .mission-text { padding: 14px 16px; color: #AAB2C0; line-height: 1.7; font-size: 12px; }
-    .mission-text strong { color: #FF9900; }
-
-    /* File vault */
-    .vault-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-
-    .vault-card {
-      display: block;
-      border: 1px solid #1E293B;
-      margin: -1px 0 0 -1px;
-      padding: 14px 12px;
-      color: #00FF44;
-      background: #05070B;
-      cursor: cell !important;
-      transition: background 0.15s, color 0.15s;
-    }
-
-    .vault-card .path { font-weight: bold; text-transform: uppercase; }
-    .vault-card .sep { color: #FF9900; }
-    .vault-card .desc { color: #00FF44; }
-
-    .vault-card:hover { background: #00FF44; color: #05070B; }
-    .vault-card:hover .path,
-    .vault-card:hover .sep,
-    .vault-card:hover .desc { color: #05070B; }
-
-    /* Scan line animation */
-    .scan-line {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, #FF9900 50%, transparent 100%);
-      opacity: 0.3;
-      animation: scanDown 6s linear infinite;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    @keyframes scanDown {
-      0% { top: 0; }
-      100% { top: 100vh; }
-    }
-
-    /* Flicker on load */
-    .flicker { animation: flicker 0.15s ease-in-out 3; }
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    /* Boot sequence */
-    .boot-overlay {
-      position: fixed;
-      inset: 0;
-      background: #05070B;
-      z-index: 10000;
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #00FF44;
-      font-family: Consolas, monospace;
+      text-align: center;
+      padding: 80px 24px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(168deg, #FFFFFF 0%, #FFF8F5 40%, #FFF0E8 100%);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(232, 89, 12, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 20px;
+      border-radius: 100px;
       font-size: 13px;
-      transition: opacity 0.5s;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeDown 1s ease forwards;
     }
 
-    .boot-overlay.hidden { opacity: 0; pointer-events: none; }
-
-    .boot-line { margin: 2px 0; opacity: 0; animation: bootIn 0.15s forwards; }
-
-    @keyframes bootIn {
-      to { opacity: 1; }
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
     }
 
-    .footer-line {
-      margin-top: 20px;
-      color: #1E293B;
-      border-top: 1px solid #1E293B;
-      padding-top: 8px;
-      font-size: 11px;
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
-    .footer-line span { color: #FF9900; }
 
-    @media (max-width: 720px) {
-      body { padding: 12px; font-size: 12px; }
-      .vault-grid { grid-template-columns: 1fr; }
-      table.pcb td.tier, table.pcb td.dims { white-space: normal; }
-      .diag-row { flex-direction: column; gap: 4px; }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      animation: fadeUp 1s 0.2s ease forwards;
+      opacity: 0;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      max-width: 560px;
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      animation: fadeUp 1s 0.4s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      animation: fadeUp 1s 0.6s ease forwards;
+      opacity: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #D14B00; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,89,12,0.25); }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeUp 1s 0.8s ease forwards, bounce 2s 2s ease-in-out infinite;
+      opacity: 0;
+    }
+
+    .scroll-hint .arrow {
+      width: 20px; height: 20px;
+      border-right: 2px solid var(--text-secondary);
+      border-bottom: 2px solid var(--text-secondary);
+      transform: rotate(45deg);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(250, 250, 250, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      padding: 0 24px;
+      transition: border-color 0.3s;
+    }
+
+    .nav.scrolled { border-bottom-color: var(--border); }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── SECTIONS ── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 24px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ── PROGRESS TRACKER ── */
+    .progress-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin-bottom: 48px;
+    }
+
+    .progress-dates {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .progress-dates .deadline { color: var(--accent); }
+
+    .progress-bar-track {
+      position: relative;
+      height: 12px;
+      background: #F0F0F5;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF8C42, #E8590C);
+      border-radius: 100px;
+      width: 0%;
+      transition: width 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .progress-icon {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      transition: left 2s cubic-bezier(0.16, 1, 0.3, 1);
+      left: 0%;
+      filter: drop-shadow(0 2px 8px rgba(232,89,12,0.3));
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 24px;
+    }
+
+    .progress-stat {
+      text-align: center;
+    }
+
+    .progress-stat .number {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .progress-stat .label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    /* ── ARCHITECTURE CARDS ── */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .arch-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all 0.3s ease;
+    }
+
+    .arch-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+    }
+
+    .arch-card .stage {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .arch-card .dims {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .arch-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* ── RF SPECS ── */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .spec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .spec-card .spec-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .spec-card .spec-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ── FILE VAULT ── */
+    .vault-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .vault-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+
+    .vault-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .vault-card .icon {
+      width: 44px; height: 44px;
+      background: var(--accent-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .vault-card .info h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .vault-card .info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .footer p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .footer a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .section { padding: 64px 20px; }
+      .progress-section { padding: 24px; }
+      .progress-stats { gap: 24px; }
+      .progress-stat .number { font-size: 24px; }
+      .nav-links { display: none; }
+      .arch-grid, .specs-grid, .vault-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <div class="scan-line" aria-hidden="true"></div>
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">SYSTEM<span>-3</span></div>
+      <ul class="nav-links">
+        <li><a href="#mission">Mission</a></li>
+        <li><a href="#progress">Progress</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#downlink">Downlink</a></li>
+        <li><a href="#files">Files</a></li>
+      </ul>
+    </div>
+  </nav>
 
-  <div class="boot-overlay" id="bootOverlay">
-    <div class="boot-line" style="animation-delay:0.0s">[SYS-3] INITIALIZING GROUND STATION LINK...</div>
-    <div class="boot-line" style="animation-delay:0.3s">[SYS-3] LOADING PCB ARCHITECTURE REGISTRY...</div>
-    <div class="boot-line" style="animation-delay:0.6s">[SYS-3] CALIBRATING RF DOWNLINK @ 437.025 MHz...</div>
-    <div class="boot-line" style="animation-delay:0.9s">[SYS-3] ESTABLISHING SATNOGS HANDSHAKE...</div>
-    <div class="boot-line" style="animation-delay:1.2s; color:#FF9900; font-weight:bold;">[SYS-3] PORTAL ONLINE ████████████████████ 100%</div>
-  </div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge"><span class="dot"></span> In Active Development</div>
+    <h1>1U <span>CubeSat</span><br>Gamma-Ray Mission</h1>
+    <p>An open-source nanosatellite built by Stony Brook University to map cosmic radiation from Low Earth Orbit.</p>
+    <div class="hero-actions">
+      <a href="#files" class="btn btn-primary">Browse Files ↓</a>
+      <a href="https://github.com/muhammadmaalik/1U-CubeSat" class="btn btn-secondary">GitHub Repository</a>
+    </div>
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <div class="arrow"></div>
+    </div>
+  </section>
 
-  <div id="mainContent" style="opacity:0; transition: opacity 0.5s;">
+  <!-- MISSION OVERVIEW -->
+  <section class="section" id="mission">
+    <div class="reveal">
+      <div class="section-label">Mission Overview</div>
+      <h2 class="section-title">Measuring cosmic radiation from orbit</h2>
+      <p class="section-subtitle">
+        SYSTEM-3 carries a miniaturized gamma-ray spectrometer — a CsI(Tl) scintillator crystal paired with a Hamamatsu SiPM array — into LEO to detect and catalog gamma photons in real-time. All telemetry is broadcast unencrypted through the global SatNOGS ground station network as open public science data.
+      </p>
+    </div>
+  </section>
 
-    <header class="diag-header flicker">
-      <div class="diag-row">
-        <div class="diag-left">STONY BROOK UNIVERSITY NANOSATELLITE DIVISION // SYSTEM-3</div>
-        <div class="diag-right">MISSION CODE: LEO-GRM // SATELLITE CORE BLUEPRINT</div>
-      </div>
-      <div class="diag-rule" aria-hidden="true">────────────────────────────────────────────────────────────────────────────────</div>
-    </header>
-
-    <!-- MISSION PROGRESS TRACKER -->
-    <section class="zone" aria-labelledby="progress-label">
-      <h2 id="progress-label" class="zone-label">[ MISSION PROGRESS // DEADLINE TRACKER ]</h2>
-      <div class="zone-body progress-zone">
-        <div class="progress-header">
-          <span>AUG 19, 2026 — DEVELOPMENT START</span>
-          <span>NOV 19, 2026 — LAUNCH DEADLINE</span>
+  <!-- PROGRESS -->
+  <section class="section" id="progress" style="padding-top: 0;">
+    <div class="reveal">
+      <div class="section-label">Deadline Tracker</div>
+      <h2 class="section-title">Mission timeline</h2>
+      <p class="section-subtitle">Tracking development progress toward the November 19, 2026 launch deadline.</p>
+      <div class="progress-section">
+        <div class="progress-dates">
+          <span>Aug 19, 2026</span>
+          <span class="deadline">Nov 19, 2026</span>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="progressFill"></div>
-          <div class="cubesat-icon" id="cubesatIcon">🛰️</div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressFill"></div>
+          <div class="progress-icon" id="progressIcon">🛰️</div>
         </div>
-        <div class="progress-labels">
-          <span>DESIGN & PROTOTYPING</span>
-          <span>INTEGRATION & TEST</span>
-          <span>LAUNCH READY</span>
+        <div class="progress-stats">
+          <div class="progress-stat">
+            <div class="number" id="daysElapsed">0</div>
+            <div class="label">Days Elapsed</div>
+          </div>
+          <div class="progress-stat">
+            <div class="number" id="daysRemaining">92</div>
+            <div class="label">Days Remaining</div>
+          </div>
+          <div class="progress-stat">
+            <div class="number" id="pctComplete">0%</div>
+            <div class="label">Complete</div>
+          </div>
         </div>
-        <div class="days-remaining" id="daysRemaining"></div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- MISSION OVERVIEW -->
-    <section class="zone" aria-labelledby="overview-label">
-      <h2 id="overview-label" class="zone-label">[ MISSION OVERVIEW ]</h2>
-      <div class="zone-body mission-text">
-        <strong>SYSTEM-3</strong> is a 1U CubeSat developed by the Stony Brook University Nanosatellite Division.
-        The primary payload is a miniaturized gamma-ray spectrometer using a <strong>CsI(Tl) scintillator crystal</strong>
-        coupled with a <strong>Hamamatsu SiPM array</strong> for detecting cosmic radiation in Low Earth Orbit.
-        <br><br>
-        The satellite features a 6-layer PCB stack architecture, solar-powered EPS with MPPT charging,
-        and a UHF amateur radio downlink broadcasting unencrypted public science telemetry through the
-        global <strong>SatNOGS</strong> ground station network. All hardware designs, firmware, and documentation
-        are fully open-source.
+  <!-- ARCHITECTURE -->
+  <section class="section" id="architecture" style="padding-top: 0;">
+    <div class="reveal">
+      <div class="section-label">Hardware</div>
+      <h2 class="section-title">6-layer PCB stack architecture</h2>
+      <p class="section-subtitle">Each 95 × 95 mm board in the stack serves a dedicated subsystem, from payload detection to antenna deployment.</p>
+    </div>
+    <div class="arch-grid">
+      <div class="arch-card reveal">
+        <div class="stage">Stage 1 — Payload</div>
+        <div class="dims">95.0 × 95.0 mm</div>
+        <h3>CsI(Tl) Scintillator Crystal Sheet &amp; Hamamatsu SiPM Array (C3015822)</h3>
       </div>
-    </section>
-
-    <!-- 6-LAYER PCB ARCHITECTURE -->
-    <section class="zone" aria-labelledby="pcb-label">
-      <h1 id="pcb-label" class="zone-label">[ 6-LAYER PCB ARCHITECTURE REGISTRY ]</h1>
-      <div class="zone-body">
-        <table class="pcb">
-          <thead>
-            <tr>
-              <th scope="col">TIER</th>
-              <th scope="col">DIMENSIONS</th>
-              <th scope="col">HARDWARE SUB-SYSTEM ARCHITECTURE LOG</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="tier">STAGE 1</td><td class="dims">95.0 × 95.0 mm</td><td class="log">CsI(Tl) Scintillator Crystal Sheet (50×50×3mm) &amp; Hamamatsu SiPM Array (C3015822)</td></tr>
-            <tr><td class="tier">STAGE 2</td><td class="dims">95.0 × 95.0 mm</td><td class="log">Analog Front-End Pico Spectrometer (LTC6227 Low-Noise Op-Amp / Noise Filtering Loop)</td></tr>
-            <tr><td class="tier">STAGE 3</td><td class="dims">95.0 × 95.0 mm</td><td class="log">C&amp;DH Flight Core (STM32F411RET6 Microcontroller / EXTI10 Hardware Interrupt Mode)</td></tr>
-            <tr><td class="tier">STAGE 4</td><td class="dims">95.0 × 95.0 mm</td><td class="log">EPS Solar Power Manager (Texas Instruments BQ25713 Buck-Boost I2C MPPT Charger)</td></tr>
-            <tr><td class="tier">STAGE 5</td><td class="dims">95.0 × 95.0 mm</td><td class="log">Ballast Floor (Dual 18650 LiFePO4 Batteries Series 2S1P Config &amp; RFM95W UHF Transceiver)</td></tr>
-            <tr><td class="tier">STAGE 6</td><td class="dims">95.0 × 95.0 mm</td><td class="log">Antenna Deployment Deck (Passive Tape-Measure Dipole Elements &amp; 10-Ohm 1W Actuator)</td></tr>
-          </tbody>
-        </table>
+      <div class="arch-card reveal">
+        <div class="stage">Stage 2 — Analog Front-End</div>
+        <div class="dims">95.0 × 95.0 mm</div>
+        <h3>Pico Spectrometer — LTC6227 Low-Noise Op-Amp with Noise Filtering Loop</h3>
       </div>
-    </section>
-
-    <!-- RF DOWNLINK -->
-    <section class="zone" aria-labelledby="rf-label">
-      <h2 id="rf-label" class="zone-label">[ RF DOWNLINK SPECIFICATIONS ]</h2>
-      <div class="zone-body">
-        <ul class="rf-list">
-          <li><span class="key">CHANNEL FREQUENCY:</span> <span>437.025 MHz UHF Amateur Space Band</span></li>
-          <li><span class="key">STREAM PROTOCOL  :</span> <span>Half-Duplex AX.25 Packet Architecture (9600 Baud / GFSK)</span></li>
-          <li><span class="key">TRACKING GRIDS   :</span> <span>Automated Integration with Open-Source Global SatNOGS Receiver Nodes</span></li>
-          <li><span class="key">SECURITY POLICY  :</span> <span>0% Encryption / Mandatory Public Science Telemetry Broadcasts</span></li>
-        </ul>
+      <div class="arch-card reveal">
+        <div class="stage">Stage 3 — Flight Computer</div>
+        <div class="dims">95.0 × 95.0 mm</div>
+        <h3>C&amp;DH Core — STM32F411RET6 Microcontroller, EXTI10 Hardware Interrupt Mode</h3>
       </div>
-    </section>
-
-    <!-- FILE VAULT -->
-    <section class="zone" aria-labelledby="vault-label">
-      <h2 id="vault-label" class="zone-label">[ REPOSITORY INTEGRATION // DOWNLOAD FILE-VAULT ]</h2>
-      <div class="zone-body vault-grid">
-        <a class="vault-card" href="CAD/">
-          <span class="path">[/CAD]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">3D Fusion 360 STEP Assemblies &amp; STL Print Files</span>
-        </a>
-        <a class="vault-card" href="EasyEDA%20Pro/">
-          <span class="path">[/EasyEDA Pro]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">PCB Schematics &amp; Layout Source Files</span>
-        </a>
-        <a class="vault-card" href="Gerber%20Files/">
-          <span class="path">[/Gerber Files]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">Manufacturing-Ready Gerber &amp; Drill Output Files</span>
-        </a>
-        <a class="vault-card" href="Code/">
-          <span class="path">[/Code]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">STM32 Flight Firmware &amp; Ground Station Scripts</span>
-        </a>
-        <a class="vault-card" href="Proposal/">
-          <span class="path">[/Proposal]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">Mission Proposals, IARU Applications &amp; FCC Forms</span>
-        </a>
-        <a class="vault-card" href="Research/">
-          <span class="path">[/Research]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">Literature Reviews, Trade Studies &amp; References</span>
-        </a>
-        <a class="vault-card" href="Physics/">
-          <span class="path">[/Physics]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">Orbital Mechanics, Radiation Models &amp; Link Budgets</span>
-        </a>
-        <a class="vault-card" href="Materials/">
-          <span class="path">[/Materials]</span>
-          <span class="sep"> ── </span>
-          <span class="desc">Bill of Materials, Vendor Datasheets &amp; Procurement</span>
-        </a>
+      <div class="arch-card reveal">
+        <div class="stage">Stage 4 — Power</div>
+        <div class="dims">95.0 × 95.0 mm</div>
+        <h3>EPS Solar Power Manager — TI BQ25713 Buck-Boost I2C MPPT Charger</h3>
       </div>
-    </section>
+      <div class="arch-card reveal">
+        <div class="stage">Stage 5 — Energy Storage &amp; Comms</div>
+        <div class="dims">95.0 × 95.0 mm</div>
+        <h3>Dual 18650 LiFePO4 Batteries (2S1P) &amp; RFM95W UHF Transceiver</h3>
+      </div>
+      <div class="arch-card reveal">
+        <div class="stage">Stage 6 — Antenna Deployment</div>
+        <div class="dims">95.0 × 95.0 mm</div>
+        <h3>Passive Tape-Measure Dipole Elements &amp; 10Ω 1W Burn-Wire Actuator</h3>
+      </div>
+    </div>
+  </section>
 
-    <footer class="footer-line">
-      <span>SYS-3</span> // LOCAL WORKSTATION PORTAL // NO EXTERNAL ASSETS // SNAP-ACTION UI
-    </footer>
+  <!-- RF DOWNLINK -->
+  <section class="section" id="downlink" style="padding-top: 0;">
+    <div class="reveal">
+      <div class="section-label">Communications</div>
+      <h2 class="section-title">RF downlink specifications</h2>
+      <p class="section-subtitle">Unencrypted public science telemetry broadcast via amateur UHF radio, receivable by anyone with a ground station.</p>
+    </div>
+    <div class="specs-grid">
+      <div class="spec-card reveal">
+        <div class="spec-label">Channel Frequency</div>
+        <div class="spec-value">437.025 MHz UHF Amateur Space Band</div>
+      </div>
+      <div class="spec-card reveal">
+        <div class="spec-label">Protocol</div>
+        <div class="spec-value">Half-Duplex AX.25 — 9600 Baud GFSK</div>
+      </div>
+      <div class="spec-card reveal">
+        <div class="spec-label">Ground Network</div>
+        <div class="spec-value">SatNOGS Global Receiver Nodes</div>
+      </div>
+      <div class="spec-card reveal">
+        <div class="spec-label">Security</div>
+        <div class="spec-value">0% Encryption — Mandatory Public Broadcasts</div>
+      </div>
+    </div>
+  </section>
 
-  </div>
+  <!-- FILE VAULT -->
+  <section class="section" id="files" style="padding-top: 0;">
+    <div class="reveal">
+      <div class="section-label">Repository</div>
+      <h2 class="section-title">Project files</h2>
+      <p class="section-subtitle">All hardware designs, firmware, research, and documentation are open-source and available for download.</p>
+    </div>
+    <div class="vault-grid">
+      <a class="vault-card reveal" href="CAD/">
+        <div class="icon">📐</div>
+        <div class="info"><h3>CAD</h3><p>3D models, STEP assemblies, STL prints</p></div>
+      </a>
+      <a class="vault-card reveal" href="EasyEDA%20Pro/">
+        <div class="icon">🔌</div>
+        <div class="info"><h3>EasyEDA Pro</h3><p>PCB schematics &amp; layout source files</p></div>
+      </a>
+      <a class="vault-card reveal" href="Gerber%20Files/">
+        <div class="icon">🏭</div>
+        <div class="info"><h3>Gerber Files</h3><p>Manufacturing-ready Gerber &amp; drill files</p></div>
+      </a>
+      <a class="vault-card reveal" href="Code/">
+        <div class="icon">💻</div>
+        <div class="info"><h3>Code</h3><p>STM32 flight firmware &amp; ground station scripts</p></div>
+      </a>
+      <a class="vault-card reveal" href="Proposal/">
+        <div class="icon">📄</div>
+        <div class="info"><h3>Proposal</h3><p>Mission proposals, IARU &amp; FCC forms</p></div>
+      </a>
+      <a class="vault-card reveal" href="Research/">
+        <div class="icon">🔬</div>
+        <div class="info"><h3>Research</h3><p>Literature reviews &amp; trade studies</p></div>
+      </a>
+      <a class="vault-card reveal" href="Physics/">
+        <div class="icon">🌌</div>
+        <div class="info"><h3>Physics</h3><p>Orbital mechanics &amp; link budgets</p></div>
+      </a>
+      <a class="vault-card reveal" href="Materials/">
+        <div class="icon">📦</div>
+        <div class="info"><h3>Materials</h3><p>BOM, datasheets &amp; procurement logs</p></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>
+      <strong>Stony Brook University Nanosatellite Division</strong><br>
+      Mission Code: LEO-GRM &nbsp;·&nbsp; SYSTEM-3 &nbsp;·&nbsp; 1U Gamma-Ray Spectrometer CubeSat<br>
+      <a href="https://github.com/muhammadmaalik/1U-CubeSat">View on GitHub</a> &nbsp;·&nbsp; MIT License
+    </p>
+  </footer>
 
   <script>
-    // Boot sequence
-    setTimeout(function() {
-      document.getElementById('bootOverlay').classList.add('hidden');
-      document.getElementById('mainContent').style.opacity = '1';
-    }, 2000);
+    // Scroll reveal
+    var reveals = document.querySelectorAll('.reveal');
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(function(el) { observer.observe(el); });
+
+    // Nav scroll effect
+    window.addEventListener('scroll', function() {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+    });
 
     // Progress calculation
-    var startDate = new Date('2026-08-19');
-    var deadline  = new Date('2026-11-19');
-    var now       = new Date();
-    var totalMs   = deadline - startDate;
-    var elapsedMs = now - startDate;
-    var pct       = Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
-    var daysLeft  = Math.max(0, Math.ceil((deadline - now) / 86400000));
+    var start = new Date('2026-08-19');
+    var end = new Date('2026-11-19');
+    var now = new Date();
+    var totalMs = end - start;
+    var elapsedMs = Math.max(0, now - start);
+    var pct = Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
+    var daysLeft = Math.max(0, Math.ceil((end - now) / 86400000));
+    var daysGone = Math.max(0, Math.floor(elapsedMs / 86400000));
 
     setTimeout(function() {
       document.getElementById('progressFill').style.width = pct + '%';
-      document.getElementById('cubesatIcon').style.left = pct + '%';
-      document.getElementById('daysRemaining').textContent =
-        '▸ ' + daysLeft + ' DAYS REMAINING — ' + Math.round(pct) + '% ELAPSED ◂';
-    }, 2200);
+      document.getElementById('progressIcon').style.left = Math.min(pct, 96) + '%';
+      document.getElementById('daysElapsed').textContent = daysGone;
+      document.getElementById('daysRemaining').textContent = daysLeft;
+      document.getElementById('pctComplete').textContent = Math.round(pct) + '%';
+    }, 600);
   </script>
 </body>
 </html>
