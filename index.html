@@ -5,18 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>STONY BROOK UNIVERSITY NANOSATELLITE DIVISION // SYSTEM-3</title>
   <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      border-radius: 0 !important;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
 
-    html {
-      background: #05070B;
-    }
+    html { background: #05070B; }
 
     body {
       background: #05070B;
@@ -32,17 +23,9 @@
       -webkit-font-smoothing: none;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    a { color: inherit; text-decoration: none; }
+    a:focus { outline: 1px solid #FF9900; outline-offset: 2px; }
 
-    a:focus {
-      outline: 1px solid #FF9900;
-      outline-offset: 2px;
-    }
-
-    /* ── WORKSTATION DIAGNOSTIC HEADER ── */
     .diag-header {
       border: 1px solid #1E293B;
       padding: 10px 12px;
@@ -56,8 +39,7 @@
       flex-wrap: wrap;
     }
 
-    .diag-left,
-    .diag-right {
+    .diag-left, .diag-right {
       color: #FF9900;
       font-weight: bold;
       letter-spacing: 0.02em;
@@ -69,11 +51,9 @@
       margin-top: 8px;
       overflow: hidden;
       white-space: nowrap;
-      letter-spacing: 0;
       user-select: none;
     }
 
-    /* ── SECTION FRAMES ── */
     .zone {
       border: 1px solid #1E293B;
       margin-top: 16px;
@@ -88,77 +68,106 @@
       letter-spacing: 0.04em;
     }
 
-    .zone-body {
-      padding: 0;
-    }
+    .zone-body { padding: 0; }
 
-    /* ── PCB ARCHITECTURE TABLE ── */
-    table.pcb {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
+    /* Progress tracker */
+    .progress-zone { padding: 20px 16px; }
 
-    table.pcb th,
-    table.pcb td {
-      border: 1px solid #1E293B;
-      padding: 8px 10px;
-      text-align: left;
-      vertical-align: top;
-      word-wrap: break-word;
-    }
-
-    table.pcb th {
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
       color: #FF9900;
       font-weight: bold;
       text-transform: uppercase;
-      background: #05070B;
+      margin-bottom: 12px;
+      font-size: 11px;
+      letter-spacing: 0.05em;
     }
 
-    table.pcb td.tier {
+    .progress-track {
+      position: relative;
+      height: 40px;
+      border: 1px solid #1E293B;
+      background: #0A0E14;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      background: linear-gradient(90deg, #FF9900 0%, #FF6600 100%);
+      transition: width 2s ease-out;
+      width: 0%;
+    }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 30px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15));
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .cubesat-icon {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      filter: drop-shadow(0 0 6px #FF9900);
+      z-index: 2;
+      transition: left 2s ease-out;
+      left: 0%;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      color: #555;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .days-remaining {
+      text-align: center;
+      margin-top: 10px;
       color: #00FF44;
       font-weight: bold;
-      width: 12%;
-      white-space: nowrap;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      animation: pulse 2s ease-in-out infinite;
     }
 
-    table.pcb td.dims {
-      color: #FFFFFF;
-      width: 18%;
-      white-space: nowrap;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
-    table.pcb td.log {
-      color: #FFFFFF;
-    }
+    /* PCB table */
+    table.pcb { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    table.pcb th, table.pcb td { border: 1px solid #1E293B; padding: 8px 10px; text-align: left; vertical-align: top; word-wrap: break-word; }
+    table.pcb th { color: #FF9900; font-weight: bold; text-transform: uppercase; background: #05070B; }
+    table.pcb td.tier { color: #00FF44; font-weight: bold; width: 12%; white-space: nowrap; }
+    table.pcb td.dims { color: #FFFFFF; width: 18%; white-space: nowrap; }
+    table.pcb td.log { color: #FFFFFF; }
 
-    /* ── RF DOWNLINK BLOCK ── */
-    .rf-list {
-      list-style: none;
-      padding: 10px 12px 12px;
-    }
+    /* RF list */
+    .rf-list { list-style: none; padding: 10px 12px 12px; }
+    .rf-list li { color: #FFFFFF; padding: 4px 0; white-space: pre-wrap; }
+    .rf-list .key { color: #00FF44; font-weight: bold; }
 
-    .rf-list li {
-      color: #FFFFFF;
-      padding: 4px 0;
-      white-space: pre-wrap;
-    }
+    /* Mission overview */
+    .mission-text { padding: 14px 16px; color: #AAB2C0; line-height: 1.7; font-size: 12px; }
+    .mission-text strong { color: #FF9900; }
 
-    .rf-list .key {
-      color: #00FF44;
-      font-weight: bold;
-    }
-
-    .rf-list .val {
-      color: #FFFFFF;
-    }
-
-    /* ── FILE VAULT CARDS ── */
-    .vault-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
+    /* File vault */
+    .vault-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
 
     .vault-card {
       display: block;
@@ -168,30 +177,64 @@
       color: #00FF44;
       background: #05070B;
       cursor: cell !important;
+      transition: background 0.15s, color 0.15s;
     }
 
-    .vault-card .path {
-      font-weight: bold;
-      text-transform: uppercase;
-    }
+    .vault-card .path { font-weight: bold; text-transform: uppercase; }
+    .vault-card .sep { color: #FF9900; }
+    .vault-card .desc { color: #00FF44; }
 
-    .vault-card .sep {
-      color: #FF9900;
-    }
-
-    .vault-card .desc {
-      color: #00FF44;
-    }
-
-    .vault-card:hover {
-      background: #00FF44;
-      color: #05070B;
-    }
-
+    .vault-card:hover { background: #00FF44; color: #05070B; }
     .vault-card:hover .path,
     .vault-card:hover .sep,
-    .vault-card:hover .desc {
-      color: #05070B;
+    .vault-card:hover .desc { color: #05070B; }
+
+    /* Scan line animation */
+    .scan-line {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #FF9900 50%, transparent 100%);
+      opacity: 0.3;
+      animation: scanDown 6s linear infinite;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @keyframes scanDown {
+      0% { top: 0; }
+      100% { top: 100vh; }
+    }
+
+    /* Flicker on load */
+    .flicker { animation: flicker 0.15s ease-in-out 3; }
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Boot sequence */
+    .boot-overlay {
+      position: fixed;
+      inset: 0;
+      background: #05070B;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #00FF44;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      transition: opacity 0.5s;
+    }
+
+    .boot-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .boot-line { margin: 2px 0; opacity: 0; animation: bootIn 0.15s forwards; }
+
+    @keyframes bootIn {
+      to { opacity: 1; }
     }
 
     .footer-line {
@@ -201,135 +244,186 @@
       padding-top: 8px;
       font-size: 11px;
     }
-
-    .footer-line span {
-      color: #FF9900;
-    }
+    .footer-line span { color: #FF9900; }
 
     @media (max-width: 720px) {
-      body {
-        padding: 12px;
-        font-size: 12px;
-      }
-
-      .vault-grid {
-        grid-template-columns: 1fr;
-      }
-
-      table.pcb td.tier,
-      table.pcb td.dims {
-        white-space: normal;
-      }
-
-      .diag-row {
-        flex-direction: column;
-        gap: 4px;
-      }
+      body { padding: 12px; font-size: 12px; }
+      .vault-grid { grid-template-columns: 1fr; }
+      table.pcb td.tier, table.pcb td.dims { white-space: normal; }
+      .diag-row { flex-direction: column; gap: 4px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. WORKSTATION DIAGNOSTIC HEADER -->
-  <header class="diag-header">
-    <div class="diag-row">
-      <div class="diag-left">STONY BROOK UNIVERSITY NANOSATELLITE DIVISION // SYSTEM-3</div>
-      <div class="diag-right">MISSION CODE: LEO-GRM // SATELLITE CORE BLUEPRINT</div>
-    </div>
-    <div class="diag-rule" aria-hidden="true">--------------------------------------------------</div>
-  </header>
+  <div class="scan-line" aria-hidden="true"></div>
 
-  <!-- 2. 6-LAYER PCB ARCHITECTURE REGISTRY -->
-  <section class="zone" aria-labelledby="pcb-label">
-    <h1 id="pcb-label" class="zone-label">[ 6-LAYER PCB ARCHITECTURE REGISTRY ]</h1>
-    <div class="zone-body">
-      <table class="pcb">
-        <thead>
-          <tr>
-            <th scope="col">TIER</th>
-            <th scope="col">DIMENSIONS</th>
-            <th scope="col">HARDWARE SUB-SYSTEM ARCHITECTURE LOG</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="tier">STAGE 1</td>
-            <td class="dims">95.0 x 95.0 mm</td>
-            <td class="log">CsI(Tl) Scintillator Crystal Sheet (50x50x3mm) &amp; Hamamatsu SiPM Array (C3015822)</td>
-          </tr>
-          <tr>
-            <td class="tier">STAGE 2</td>
-            <td class="dims">95.0 x 95.0 mm</td>
-            <td class="log">Analog Front-End Pico Spectrometer (LTC6227 Low-Noise Op-Amp / Noise Filtering Loop)</td>
-          </tr>
-          <tr>
-            <td class="tier">STAGE 3</td>
-            <td class="dims">95.0 x 95.0 mm</td>
-            <td class="log">C&amp;DH Flight Core (STM32F411RET6 Microcontroller / EXTI10 Hardware Interrupt Mode)</td>
-          </tr>
-          <tr>
-            <td class="tier">STAGE 4</td>
-            <td class="dims">95.0 x 95.0 mm</td>
-            <td class="log">EPS Solar Power Manager (Texas Instruments BQ25713 Buck-Boost I2C MPPT Charger)</td>
-          </tr>
-          <tr>
-            <td class="tier">STAGE 5</td>
-            <td class="dims">95.0 x 95.0 mm</td>
-            <td class="log">Ballast Floor (Dual 18650 LiFePO4 Batteries Series 2S1P Config &amp; RFM95W UHF Transceiver)</td>
-          </tr>
-          <tr>
-            <td class="tier">STAGE 6</td>
-            <td class="dims">95.0 x 95.0 mm</td>
-            <td class="log">Antenna Deployment Deck (Passive Tape-Measure Dipole Elements &amp; 10-Ohm 1W Actuator)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+  <div class="boot-overlay" id="bootOverlay">
+    <div class="boot-line" style="animation-delay:0.0s">[SYS-3] INITIALIZING GROUND STATION LINK...</div>
+    <div class="boot-line" style="animation-delay:0.3s">[SYS-3] LOADING PCB ARCHITECTURE REGISTRY...</div>
+    <div class="boot-line" style="animation-delay:0.6s">[SYS-3] CALIBRATING RF DOWNLINK @ 437.025 MHz...</div>
+    <div class="boot-line" style="animation-delay:0.9s">[SYS-3] ESTABLISHING SATNOGS HANDSHAKE...</div>
+    <div class="boot-line" style="animation-delay:1.2s; color:#FF9900; font-weight:bold;">[SYS-3] PORTAL ONLINE ████████████████████ 100%</div>
+  </div>
 
-  <!-- 3. RF DOWNLINK SPECIFICATIONS -->
-  <section class="zone" aria-labelledby="rf-label">
-    <h2 id="rf-label" class="zone-label">[ RF DOWNLINK SPECIFICATIONS ]</h2>
-    <div class="zone-body">
-      <ul class="rf-list">
-        <li><span class="key">CHANNEL FREQUENCY:</span> <span class="val">437.025 MHz UHF Amateur Space Band</span></li>
-        <li><span class="key">STREAM PROTOCOL  :</span> <span class="val">Half-Duplex AX.25 Packet Architecture (9600 Baud / GFSK)</span></li>
-        <li><span class="key">TRACKING GRIDS   :</span> <span class="val">Automated Integration with Open-Source Global SatNOGS Receiver Nodes</span></li>
-        <li><span class="key">SECURITY POLICY  :</span> <span class="val">0% Encryption / Mandatory Public Science Telemetry Broadcasts</span></li>
-      </ul>
-    </div>
-  </section>
+  <div id="mainContent" style="opacity:0; transition: opacity 0.5s;">
 
-  <!-- 4. REPOSITORY INTEGRATION FILE-VAULT -->
-  <section class="zone" aria-labelledby="vault-label">
-    <h2 id="vault-label" class="zone-label">[ REPOSITORY INTEGRATION // DOWNLOAD FILE-VAULT ]</h2>
-    <div class="zone-body vault-grid">
-      <a class="vault-card" href="legal/">
-        <span class="path">[/legal]</span>
-        <span class="sep"> ── </span>
-        <span class="desc">IARU Frequency Coordination Application Draft &amp; FCC Form 442 Trackers</span>
-      </a>
-      <a class="vault-card" href="hardware/">
-        <span class="path">[/hardware]</span>
-        <span class="sep"> ── </span>
-        <span class="desc">3D Fusion 360 STEP Assembly Packages &amp; EasyEDA Pro 4-Layer Gerber Schematics</span>
-      </a>
-      <a class="vault-card" href="firmware/">
-        <span class="path">[/firmware]</span>
-        <span class="sep"> ── </span>
-        <span class="desc">STM32 C++ Background Radiation Counting Loops &amp; Countdown Watchdog Scripts</span>
-      </a>
-      <a class="vault-card" href="media/">
-        <span class="path">[/media]</span>
-        <span class="sep"> ── </span>
-        <span class="desc">Laboratory Collaboration Images &amp; Structural CAD Internal Renderings</span>
-      </a>
-    </div>
-  </section>
+    <header class="diag-header flicker">
+      <div class="diag-row">
+        <div class="diag-left">STONY BROOK UNIVERSITY NANOSATELLITE DIVISION // SYSTEM-3</div>
+        <div class="diag-right">MISSION CODE: LEO-GRM // SATELLITE CORE BLUEPRINT</div>
+      </div>
+      <div class="diag-rule" aria-hidden="true">────────────────────────────────────────────────────────────────────────────────</div>
+    </header>
 
-  <footer class="footer-line">
-    <span>SYS-3</span> // LOCAL WORKSTATION PORTAL // NO EXTERNAL ASSETS // SNAP-ACTION UI
-  </footer>
+    <!-- MISSION PROGRESS TRACKER -->
+    <section class="zone" aria-labelledby="progress-label">
+      <h2 id="progress-label" class="zone-label">[ MISSION PROGRESS // DEADLINE TRACKER ]</h2>
+      <div class="zone-body progress-zone">
+        <div class="progress-header">
+          <span>AUG 19, 2026 — DEVELOPMENT START</span>
+          <span>NOV 19, 2026 — LAUNCH DEADLINE</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="cubesat-icon" id="cubesatIcon">🛰️</div>
+        </div>
+        <div class="progress-labels">
+          <span>DESIGN & PROTOTYPING</span>
+          <span>INTEGRATION & TEST</span>
+          <span>LAUNCH READY</span>
+        </div>
+        <div class="days-remaining" id="daysRemaining"></div>
+      </div>
+    </section>
 
+    <!-- MISSION OVERVIEW -->
+    <section class="zone" aria-labelledby="overview-label">
+      <h2 id="overview-label" class="zone-label">[ MISSION OVERVIEW ]</h2>
+      <div class="zone-body mission-text">
+        <strong>SYSTEM-3</strong> is a 1U CubeSat developed by the Stony Brook University Nanosatellite Division.
+        The primary payload is a miniaturized gamma-ray spectrometer using a <strong>CsI(Tl) scintillator crystal</strong>
+        coupled with a <strong>Hamamatsu SiPM array</strong> for detecting cosmic radiation in Low Earth Orbit.
+        <br><br>
+        The satellite features a 6-layer PCB stack architecture, solar-powered EPS with MPPT charging,
+        and a UHF amateur radio downlink broadcasting unencrypted public science telemetry through the
+        global <strong>SatNOGS</strong> ground station network. All hardware designs, firmware, and documentation
+        are fully open-source.
+      </div>
+    </section>
+
+    <!-- 6-LAYER PCB ARCHITECTURE -->
+    <section class="zone" aria-labelledby="pcb-label">
+      <h1 id="pcb-label" class="zone-label">[ 6-LAYER PCB ARCHITECTURE REGISTRY ]</h1>
+      <div class="zone-body">
+        <table class="pcb">
+          <thead>
+            <tr>
+              <th scope="col">TIER</th>
+              <th scope="col">DIMENSIONS</th>
+              <th scope="col">HARDWARE SUB-SYSTEM ARCHITECTURE LOG</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="tier">STAGE 1</td><td class="dims">95.0 × 95.0 mm</td><td class="log">CsI(Tl) Scintillator Crystal Sheet (50×50×3mm) &amp; Hamamatsu SiPM Array (C3015822)</td></tr>
+            <tr><td class="tier">STAGE 2</td><td class="dims">95.0 × 95.0 mm</td><td class="log">Analog Front-End Pico Spectrometer (LTC6227 Low-Noise Op-Amp / Noise Filtering Loop)</td></tr>
+            <tr><td class="tier">STAGE 3</td><td class="dims">95.0 × 95.0 mm</td><td class="log">C&amp;DH Flight Core (STM32F411RET6 Microcontroller / EXTI10 Hardware Interrupt Mode)</td></tr>
+            <tr><td class="tier">STAGE 4</td><td class="dims">95.0 × 95.0 mm</td><td class="log">EPS Solar Power Manager (Texas Instruments BQ25713 Buck-Boost I2C MPPT Charger)</td></tr>
+            <tr><td class="tier">STAGE 5</td><td class="dims">95.0 × 95.0 mm</td><td class="log">Ballast Floor (Dual 18650 LiFePO4 Batteries Series 2S1P Config &amp; RFM95W UHF Transceiver)</td></tr>
+            <tr><td class="tier">STAGE 6</td><td class="dims">95.0 × 95.0 mm</td><td class="log">Antenna Deployment Deck (Passive Tape-Measure Dipole Elements &amp; 10-Ohm 1W Actuator)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RF DOWNLINK -->
+    <section class="zone" aria-labelledby="rf-label">
+      <h2 id="rf-label" class="zone-label">[ RF DOWNLINK SPECIFICATIONS ]</h2>
+      <div class="zone-body">
+        <ul class="rf-list">
+          <li><span class="key">CHANNEL FREQUENCY:</span> <span>437.025 MHz UHF Amateur Space Band</span></li>
+          <li><span class="key">STREAM PROTOCOL  :</span> <span>Half-Duplex AX.25 Packet Architecture (9600 Baud / GFSK)</span></li>
+          <li><span class="key">TRACKING GRIDS   :</span> <span>Automated Integration with Open-Source Global SatNOGS Receiver Nodes</span></li>
+          <li><span class="key">SECURITY POLICY  :</span> <span>0% Encryption / Mandatory Public Science Telemetry Broadcasts</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FILE VAULT -->
+    <section class="zone" aria-labelledby="vault-label">
+      <h2 id="vault-label" class="zone-label">[ REPOSITORY INTEGRATION // DOWNLOAD FILE-VAULT ]</h2>
+      <div class="zone-body vault-grid">
+        <a class="vault-card" href="CAD/">
+          <span class="path">[/CAD]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">3D Fusion 360 STEP Assemblies &amp; STL Print Files</span>
+        </a>
+        <a class="vault-card" href="EasyEDA%20Pro/">
+          <span class="path">[/EasyEDA Pro]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">PCB Schematics &amp; Layout Source Files</span>
+        </a>
+        <a class="vault-card" href="Gerber%20Files/">
+          <span class="path">[/Gerber Files]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">Manufacturing-Ready Gerber &amp; Drill Output Files</span>
+        </a>
+        <a class="vault-card" href="Code/">
+          <span class="path">[/Code]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">STM32 Flight Firmware &amp; Ground Station Scripts</span>
+        </a>
+        <a class="vault-card" href="Proposal/">
+          <span class="path">[/Proposal]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">Mission Proposals, IARU Applications &amp; FCC Forms</span>
+        </a>
+        <a class="vault-card" href="Research/">
+          <span class="path">[/Research]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">Literature Reviews, Trade Studies &amp; References</span>
+        </a>
+        <a class="vault-card" href="Physics/">
+          <span class="path">[/Physics]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">Orbital Mechanics, Radiation Models &amp; Link Budgets</span>
+        </a>
+        <a class="vault-card" href="Materials/">
+          <span class="path">[/Materials]</span>
+          <span class="sep"> ── </span>
+          <span class="desc">Bill of Materials, Vendor Datasheets &amp; Procurement</span>
+        </a>
+      </div>
+    </section>
+
+    <footer class="footer-line">
+      <span>SYS-3</span> // LOCAL WORKSTATION PORTAL // NO EXTERNAL ASSETS // SNAP-ACTION UI
+    </footer>
+
+  </div>
+
+  <script>
+    // Boot sequence
+    setTimeout(function() {
+      document.getElementById('bootOverlay').classList.add('hidden');
+      document.getElementById('mainContent').style.opacity = '1';
+    }, 2000);
+
+    // Progress calculation
+    var startDate = new Date('2026-08-19');
+    var deadline  = new Date('2026-11-19');
+    var now       = new Date();
+    var totalMs   = deadline - startDate;
+    var elapsedMs = now - startDate;
+    var pct       = Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
+    var daysLeft  = Math.max(0, Math.ceil((deadline - now) / 86400000));
+
+    setTimeout(function() {
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('cubesatIcon').style.left = pct + '%';
+      document.getElementById('daysRemaining').textContent =
+        '▸ ' + daysLeft + ' DAYS REMAINING — ' + Math.round(pct) + '% ELAPSED ◂';
+    }, 2200);
+  </script>
 </body>
 </html>
